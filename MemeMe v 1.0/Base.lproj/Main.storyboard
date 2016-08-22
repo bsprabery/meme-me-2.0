@@ -197,7 +197,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dCO-V4-h9R">
+                            <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="dCO-V4-h9R">
                                 <rect key="frame" x="0.0" y="44" width="600" height="512"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LnE-xL-MAm">
@@ -287,12 +287,12 @@
                             <constraint firstItem="dCO-V4-h9R" firstAttribute="leading" secondItem="eTW-Fl-w4Y" secondAttribute="leading" id="GEd-os-bSp"/>
                             <constraint firstItem="3We-v1-C41" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="H1i-Zo-IV3"/>
                             <constraint firstItem="LnE-xL-MAm" firstAttribute="centerX" secondItem="eTW-Fl-w4Y" secondAttribute="centerX" id="HJQ-3Y-KYp"/>
-                            <constraint firstItem="dCO-V4-h9R" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="JBC-3x-q1H"/>
                             <constraint firstItem="dCO-V4-h9R" firstAttribute="trailing" secondItem="eTW-Fl-w4Y" secondAttribute="trailing" id="Nri-cV-v1I"/>
                             <constraint firstItem="dCO-V4-h9R" firstAttribute="trailing" secondItem="3We-v1-C41" secondAttribute="trailing" id="PcP-7K-3Rc"/>
                             <constraint firstItem="dCO-V4-h9R" firstAttribute="top" secondItem="eTW-Fl-w4Y" secondAttribute="bottom" id="URG-1W-dEg"/>
                             <constraint firstItem="eTW-Fl-w4Y" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Voj-8J-pqs"/>
                             <constraint firstAttribute="trailingMargin" secondItem="3We-v1-C41" secondAttribute="trailing" constant="-20" id="aj0-7d-hXa"/>
+                            <constraint firstItem="dCO-V4-h9R" firstAttribute="bottom" secondItem="3We-v1-C41" secondAttribute="top" id="dMs-Qv-bwf"/>
                             <constraint firstItem="dCO-V4-h9R" firstAttribute="leading" secondItem="3We-v1-C41" secondAttribute="leading" id="hi9-WD-Sxh"/>
                         </constraints>
                     </view>

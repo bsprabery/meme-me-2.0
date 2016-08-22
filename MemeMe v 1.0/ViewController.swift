@@ -25,9 +25,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     var topConstraint : NSLayoutConstraint!
     var bottomConstraint : NSLayoutConstraint!
-    //var topConstraintSubview : NSLayoutConstraint!
-    //var bottomConstraintSubview : NSLayoutConstraint!
-    
     
     
      override func viewDidLoad() {
@@ -77,17 +74,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         if (imagePickerView.image != nil) {
             layoutTextFields()
-        }
+            }
     }
     
-/*    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if (imagePickerView.image != nil) {
-            layoutTextFields()
-        }
-    }
-*/
-    
+   
     @IBAction func shareMeme(sender: AnyObject) {
         let image = generatedMemedImage(imagePickerView.image!.size)
         let controller = UIActivityViewController(activityItems: [image], applicationActivities: nil)
@@ -104,7 +94,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     @IBAction func cancelButton(sender: AnyObject) {
         
-    // Implement code to create segue back to table/collection view controller instead of the following:
+        // Implement code to create segue back to table/collection view controller instead of using the following:
         
         topTextField.text = "TOP"
         bottomTextField.text = "BOTTOM"
@@ -131,6 +121,77 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         presentViewController(imagePicker, animated: true, completion: nil)
     
     }
+    
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            imagePickerView.image = image
+        }
+        
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    //GitHub - https://gist.github.com/tomasbasham/10533743
+    
+    func generatedMemedImage(size:CGSize) -> UIImage {
+        var scaledImageRect = CGRect.zero
+        
+        let aspectWidth = size.width / imagePickerView.image!.size.width
+        let aspectHeight = size.height / imagePickerView.image!.size.height
+        let aspectRatio = min(aspectWidth, aspectHeight)
+        
+        scaledImageRect.size.width = imagePickerView.image!.size.width * aspectRatio
+        scaledImageRect.size.height = imagePickerView.image!.size.height * aspectRatio
+        scaledImageRect.origin.x = (size.width - scaledImageRect.size.width) / 2.0
+        scaledImageRect.origin.y = (size.height - scaledImageRect.size.height) / 2.0
+        
+        imagePickerView.frame = scaledImageRect
+        //subview.frame = scaledImageRect
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        subview.drawViewHierarchyInRect(imagePickerView.frame, afterScreenUpdates: true)
+        //imagePickerView.drawViewHierarchyInRect(imagePickerView.frame, afterScreenUpdates: true)
+        
+        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return scaledImage
+        
+    }
+    
+    func save() {
+        let meme = Meme(top: topTextField.text!, bottom: bottomTextField.text!, image: imagePickerView.image!, memedImage: generatedMemedImage(imagePickerView.image!.size))
+        
+        (UIApplication.sharedApplication().delegate as! AppDelegate).memes.append(meme)
+
+    }
+    
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.unsubscribeFromKeyboardNotifications()
+        navigationController?.navigationBarHidden = false
+    }
+    
+    
+    //Text Fields
+
+    func textFieldDidBeginEditing() {
+        topTextField.text = ""
+        bottomTextField.text = ""
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        topTextField.resignFirstResponder()
+        bottomTextField.resignFirstResponder()
+        return true
+    }
+    
     
     //I adapted this from Stack Overflow: http://stackoverflow.com/questions/32479499/updating-auto-layout-constraints-to-reposition-text-field
     
@@ -169,164 +230,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         view.addConstraint(bottomConstraint)
     }
     
-    /*func layoutSubview () {
-        if topConstraintSubview != nil {
-            view.removeConstraint(topConstraintSubview)
-        }
-        
-        if bottomConstraintSubview != nil {
-            view.removeConstraint(bottomConstraintSubview)
-        }
-        
-        let margin = getFrame().origin.y + getFrame().size.height * 0.01
-        
-        topConstraintSubview = NSLayoutConstraint(
-            item: subview,
-            attribute:  . Top,
-            relatedBy: .Equal,
-            toItem: imagePickerView,
-            attribute: .Top,
-            multiplier: 0.0,
-            constant: margin)
-        view.addConstraint(topConstraintSubview)
-        
-        bottomConstraintSubview = NSLayoutConstraint(
-            item: subview,
-            attribute: .Bottom,
-            relatedBy: .Equal,
-            toItem: imagePickerView,
-            attribute: .Bottom,
-            multiplier: 0.0,
-            constant: -margin)
-        view.addConstraint(bottomConstraintSubview)
-
-    }
-
-*/
-    
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    
-    
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            imagePickerView.image = image
-        }
-        
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    // http://stackoverflow.com/questions/4711615/how-to-get-the-displayed-image-frame-from-uiimageview/29944216#29944216
-   /*
-    func getImageSize() -> CGRect {
-        let image = imagePickerView.image!
-        let width = image.size.width
-        let height = image.size.height
-        
-        let viewWidth = imagePickerView.frame.width
-        let viewHeight = imagePickerView.frame.height
-        
-        //Aspect Ratio
-        let ri = height/width
-        let rv = viewHeight/viewWidth
-        
-        var x, y, w, h : CGFloat
-        
-        if ri > rv {
-            h = viewHeight
-            w = h / ri
-            x = (viewWidth / 2) - (w / 2)
-            y = 0
-        } else {
-            w = viewWidth
-            h = w * ri
-            x = 0
-            y = (viewHeight / 2) - (h / 2)
-        }
-        
-        return CGRect(x: x, y: y, width: w, height: h)
-    }
-    */
-
-    
-    
-    //GitHub - https://gist.github.com/tomasbasham/10533743
-    
-    func generatedMemedImage(size:CGSize) -> UIImage {
-        var scaledImageRect = CGRect.zero
-        
-        let aspectWidth = size.width / imagePickerView.image!.size.width
-        let aspectHeight = size.height / imagePickerView.image!.size.height
-        let aspectRatio = min(aspectWidth, aspectHeight)
-        
-        scaledImageRect.size.width = imagePickerView.image!.size.width * aspectRatio
-        scaledImageRect.size.height = imagePickerView.image!.size.height * aspectRatio
-        scaledImageRect.origin.x = (size.width - scaledImageRect.size.width) / 2.0
-        scaledImageRect.origin.y = (size.height - scaledImageRect.size.height) / 2.0
-        
-        //Set the view's size equal to the images size?
-        //subview.frame = scaledImageRect
-        //subview.center = subview.superview!.center
-        
-        imagePickerView.frame = scaledImageRect
-        
-        UIGraphicsBeginImageContextWithOptions(size, false, 0)
-        //imagePickerView.image!.drawInRect(scaledImageRect)
-        imagePickerView.drawViewHierarchyInRect(imagePickerView.frame, afterScreenUpdates: true)
-        
-        
-        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return scaledImage
-        
-    }
-    
-   /*
-    func generatedMemedImage() -> UIImage {
-        
-        let size = imagePickerView.image != nil ? getImageSize().size : getImageSize().size
-        let frames = AVMakeRectWithAspectRatioInsideRect(size, getImageSize())
-        
-        UIGraphicsBeginImageContextWithOptions(getImageSize().size, imagePickerView.opaque, 0.0)
-        imagePickerView.drawViewHierarchyInRect(frames, afterScreenUpdates: true)
-        let memedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return memedImage
-    }
-    
-    */
-    
-    func save() {
-        let meme = Meme(top: topTextField.text!, bottom: bottomTextField.text!, image: imagePickerView.image!, memedImage: generatedMemedImage(imagePickerView.image!.size))
-        
-        (UIApplication.sharedApplication().delegate as! AppDelegate).memes.append(meme)
-
-    }
-    
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.unsubscribeFromKeyboardNotifications()
-        navigationController?.navigationBarHidden = false
-    }
-    
-    
-    //Text Fields
-
-    func textFieldDidBeginEditing() {
-        topTextField.text = ""
-        bottomTextField.text = ""
-    }
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        topTextField.resignFirstResponder()
-        bottomTextField.resignFirstResponder()
-        return true
-    }
     
     //Keyboard Notifications
     
